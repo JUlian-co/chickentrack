@@ -6,7 +6,7 @@ export default defineConfig({
   schema: "./configs/db/schema.js",
   dialect: "postgresql",
   dbCredentials: {
-    url: "YOUR_DB_URL",
+    url: "postgresql://postgres:jejbos-murvaP-1vivte@db.vvklrsdxblmrlovunsde.supabase.co:5432/postgres",
   },
   schemaFilter: ["public"],
 });

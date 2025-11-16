@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { supabase } from "@/lib/supabase";
 import * as Location from "expo-location";
+import SignOutButton from "@/components/social-auth-buttons/sign-out-button";
 
 const { width: screenWidth } = Dimensions.get("window");
 const CARD_WIDTH = screenWidth * 0.8;
@@ -162,6 +163,7 @@ export default function HomeScreen() {
         <View className="absolute bottom-0 left-0 bg-main/50 w-full p-2">
           <Text className="font-semibold">{item.name}</Text>
           <Text>{item.description}</Text>
+          <SignOutButton />
         </View>
       </View>
     );

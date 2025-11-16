@@ -227,13 +227,12 @@ export default function TruckSettingsScreen() {
   };
 
   return (
-    <SafeAreaView className=" bg-main w-full p-4 flex-1">
+    <SafeAreaView className=" bg-main w-full px-4 flex-1">
+      <Back parent={"settings"} name={"Deine Wägen"} />
       <ScrollView
         className="w-full"
         contentContainerStyle={{ flexGrow: 1, justifyContent: "space-between" }}
       >
-        <Back parent={"settings"} />
-
         <View className="w-full">
           <View className="w-full flex flex-col items-center mb-6">
             <TouchableHighlight

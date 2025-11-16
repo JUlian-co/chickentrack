@@ -26,6 +26,9 @@ export const profiles = pgTable("profiles", {
   createdAt: timestamp("created_at").defaultNow(),
   userName: text("username"),
   email: text("email").unique(),
+  profilePic: text("profile_pic").default(
+    "https://vvklrsdxblmrlovunsde.supabase.co/storage/v1/object/public/images/public/ChickenTrack_default_profile.png"
+  ),
 });
 
 export const trucks = pgTable("trucks", {

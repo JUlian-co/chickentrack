@@ -47,6 +47,15 @@ export default function AuthProvider({ children }) {
       setIsLoading(true);
 
       if (session) {
+        console.log(
+          "SESSION IN IF IN AUTH PROVIDER ---------------------------------                                                                                                   "
+        );
+        console.log(session.user);
+        console.log(session.user.user_metadata.avatar_url);
+        console.log(session.user.email);
+        console.log(
+          "                                                                                                         "
+        );
         const { data } = await supabase
           .from("profiles")
           .select("*")
@@ -54,15 +63,17 @@ export default function AuthProvider({ children }) {
           .single();
 
         if (!data) {
-          /* console.log(
-            "                                                                                                         "
-          );
-          console.log(session.user.user_metadata.full_name);
-          console.log(session.user.id);
-          console.log(session.user.email);
           console.log(
             "                                                                                                         "
-          ); */
+          );
+          console.log("***+++**************************");
+          console.log(session.user);
+          console.log("***+++**************************");
+          console.log(session.user.user_metadata);
+          console.log("***+++**************************");
+          console.log(
+            "                                                                                                         "
+          );
           const { data, error } = await supabase
             .from("profiles") // <- Tabellenname als String (muss dem Schema entsprechen)
             .insert([
@@ -71,6 +82,7 @@ export default function AuthProvider({ children }) {
                 username: session.user.user_metadata.full_name,
                 id: session.user.id,
                 email: session.user.email,
+                profile_pic: session.user.user_metadata.avatar_url,
               },
             ])
             .select(); // Optional: Damit bekommst du die eingefügten Daten zurück
@@ -79,7 +91,7 @@ export default function AuthProvider({ children }) {
             // Fehlerbehandlung hier (wichtig bei Remote-APIs!)
             console.error("Fehler beim Einfügen des Profils:", error.message);
           }
-          console.log("DATA: ", data);
+          console.log("DATA: ", data, "  and  ", error);
           setProfile(data[0]);
           return;
         } else if (data) {

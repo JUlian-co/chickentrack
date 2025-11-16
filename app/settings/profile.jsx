@@ -18,12 +18,11 @@ export default function TruckSettingsScreen() {
 
   return (
     <SafeAreaView className=" bg-main w-full p-4 flex-1">
+      <Back parent={"settings"} name={"Profil"} />
       <ScrollView
         className="w-full"
         contentContainerStyle={{ flexGrow: 1, justifyContent: "space-between" }}
-      >
-        <Back parent={"settings"} />
-      </ScrollView>
+      ></ScrollView>
     </SafeAreaView>
   );
 }

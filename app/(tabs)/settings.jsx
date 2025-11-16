@@ -1,5 +1,5 @@
 import React from "react";
-import { ArrowRight, CircleUserRound, Truck } from "lucide-react-native";
+import { ArrowRight, CircleUserRound, Heart, Truck } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   Button,
@@ -25,6 +25,11 @@ const options = [
     title: "Deine Wägen",
     icon: <Truck size={20} />,
     link: "/settings/truck",
+  },
+  {
+    title: "Favoriten",
+    icon: <Heart size={20} />,
+    link: "/settings/favorites",
   },
 ];
 
