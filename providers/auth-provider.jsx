@@ -1,6 +1,7 @@
 import { AuthContext } from "@/hooks/use-auth-context";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
+import { profiles } from "@/configs/db/schema";
 
 export default function AuthProvider({ children }) {
   const [session, setSession] = useState();
@@ -52,7 +53,48 @@ export default function AuthProvider({ children }) {
           .eq("id", session.user.id)
           .single();
 
-        setProfile(data);
+        if (!data) {
+          /* console.log(
+            "                                                                                                         "
+          );
+          console.log(session.user.user_metadata.full_name);
+          console.log(session.user.id);
+          console.log(session.user.email);
+          console.log(
+            "                                                                                                         "
+          ); */
+          const { data, error } = await supabase
+            .from("profiles") // <- Tabellenname als String (muss dem Schema entsprechen)
+            .insert([
+              // <- Supabase erwartet hier ein Array von Objekten
+              {
+                username: session.user.user_metadata.full_name,
+                id: session.user.id,
+                email: session.user.email,
+              },
+            ])
+            .select(); // Optional: Damit bekommst du die eingefügten Daten zurück
+
+          if (error) {
+            // Fehlerbehandlung hier (wichtig bei Remote-APIs!)
+            console.error("Fehler beim Einfügen des Profils:", error.message);
+          }
+          console.log("DATA: ", data);
+          setProfile(data[0]);
+          return;
+        } else if (data) {
+          console.log("IN ELSE IF");
+          setProfile(data);
+        }
+
+        console.log(
+          "DATA IN PROVIDER: ",
+          session.user.id,
+          data,
+          session,
+          "   SPACE    ",
+          session.user
+        );
       } else {
         setProfile(null);
       }

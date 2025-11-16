@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.h3 {
+    @apply text-lg;
+}
+
+.tinput {
+    @apply border-2 border-secondary focus:border-accent focus:bg-accent/10 bg-secondary/10 p-2 rounded-lg;
+}
+
+.minidesc {
+    @apply text-gray-500 leading-4;
+}
