@@ -163,7 +163,6 @@ export default function HomeScreen() {
         <View className="absolute bottom-0 left-0 bg-main/50 w-full p-2">
           <Text className="font-semibold">{item.name}</Text>
           <Text>{item.description}</Text>
-          <SignOutButton />
         </View>
       </View>
     );
