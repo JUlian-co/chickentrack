@@ -69,3 +69,13 @@ export const reviews = pgTable("reviews", {
     .notNull()
     .references(() => trucks.id),
 });
+
+export const favorites = pgTable("favorites", {
+  id: uuid("id").notNull().defaultRandom().primaryKey(),
+  truckId: uuid("truck_id")
+    .notNull()
+    .references(() => trucks.id),
+  user_id: uuid("user_id")
+    .notNull()
+    .references(() => profiles.id),
+});
