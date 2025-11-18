@@ -22,12 +22,8 @@ const ITEM_SIZE = CARD_WIDTH + CARD_GAP;
 
 export default function HomeScreen() {
   const { profile } = useAuthContext();
-  console.log(
-    "------------------------------------------------Profile-----------: ",
-    profile
-  );
   const [trucks, setTrucks] = useState([]);
-  console.log("trucks under trucks state: ", trucks);
+  // console.log("trucks under trucks state: ", trucks);
   const [location, setLocation] = useState(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -42,6 +38,8 @@ export default function HomeScreen() {
       return;
     }
 
+    setTrucks([]);
+
     const { data: trucksData, error: trucksError } = await supabase
       .from("trucks")
       .select("*");
@@ -51,7 +49,7 @@ export default function HomeScreen() {
       return;
     }
 
-    console.log("Trucks geladen:", trucksData);
+    // console.log("Trucks geladen:", trucksData);
 
     const trucksWithRelatedPromises = trucksData.map(async (truck) => {
       const { data: imagesData, error: imagesError } = await supabase
@@ -59,7 +57,7 @@ export default function HomeScreen() {
         .select("*")
         .eq("truck_id", truck.id);
 
-      console.log("images from new useeffect func: ", imagesData);
+      // console.log("images from new useeffect func: ", imagesData);
 
       if (imagesError) {
         console.error(
@@ -73,7 +71,7 @@ export default function HomeScreen() {
         .select("*")
         .eq("truck_id", truck.id);
 
-      console.log("reviews from new useeffect func: ", reviewsData);
+      // console.log("reviews from new useeffect func: ", reviewsData);
 
       if (reviewsError) {
         console.error(
@@ -83,6 +81,7 @@ export default function HomeScreen() {
         return { ...truck, images: [], reviews: [] };
       }
 
+      // Stellen Sie sicher, dass getAvgStars korrekt definiert ist und funktioniert
       const avgStars = await getAvgStars(reviewsData);
 
       const { data: favoritesData, error: favoritesError } = await supabase
@@ -91,7 +90,7 @@ export default function HomeScreen() {
         .eq("truck_id", truck.id)
         .eq("user_id", profile.id);
 
-      console.log("favorites from new useeffect func: ", favoritesData);
+      // console.log("favorites from new useeffect func: ", favoritesData);
 
       if (favoritesError) {
         console.error(`Error while fetching favorites:`, favoritesError);
@@ -107,22 +106,27 @@ export default function HomeScreen() {
     });
 
     const trucksWithRelated = await Promise.all(trucksWithRelatedPromises);
-    setTrucks((prevTrucks) => [...prevTrucks, ...trucksWithRelated]);
+    setTrucks((prevTrucks) => {
+      // Ein Set verwenden, um schnell alle IDs der bereits existierenden Trucks zu sammeln
+      const existingTruckIds = new Set(prevTrucks.map((truck) => truck.id));
 
-    console.log("Vollständige Truck-Daten mit Bildern:", trucksWithRelated);
+      // Filtern Sie die neu geladenen Trucks, um nur die hinzuzufügen, die noch nicht existieren
+      const newUniqueTrucks = trucksWithRelated.filter(
+        (truck) => !existingTruckIds.has(truck.id)
+      );
+
+      // Das neue, kombinierte Array zurückgeben
+      return [...newUniqueTrucks];
+    });
+    // setTrucks(trucksWithRelated);
+    // Anstelle von: setTrucks((prevTrucks) => [...prevTrucks, ...trucksWithRelated]);
+
+    // console.log("Vollständige Truck-Daten mit Bildern:", trucksWithRelated);
   };
 
   useEffect(() => {
-    const fetchTrucks = async () => {
-      const { data } = await supabase.from("trucks").select("*");
-      console.log("data: ", data);
-      setTrucks(data);
-      console.log("trucks: ", trucks);
-    };
-
-    // fetchTrucks();
     fetchTrucksAndRelated();
-  }, [profile]);
+  }, [profile?.id]);
 
   useEffect(() => {
     (async () => {
@@ -141,36 +145,37 @@ export default function HomeScreen() {
   }, []);
 
   const favoriteTruck = async (truck) => {
-    console.log("truck in favor truck: ", truck);
-    //   {
-    //   avgStars: 0,
-    //   created_at: "2025-11-14T15:46:59.535713",
-    //   description: "",
-    //   id: "1b7ef971-cc53-4a3c-9836-5ca7db4cf692",
-    //   images: [
-    //     {
-    //       created_at: "2025-11-14T15:47:02.924553",
-    //       id: "5320cafb-4ea1-407b-8075-2861a742fd20",
-    //       source:
-    //         "https://vvklrsdxblmrlovunsde.supabase.co/storage/v1/object/public/images/public/ChickenTrack_1763135220590.jpg",
-    //       truck_id: "1b7ef971-cc53-4a3c-9836-5ca7db4cf692",
-    //       uploader_id: "95e4f570-c807-4100-9ace-4550377ad391",
-    //     },
-    //   ],
-    //   latitude: 51.47512025164441,
-    //   longitude: -0.14143450650237957,
-    //   name: "Ich",
-    //   owner_email: "gsproduction.juli@gmail.com",
-    //   owner_id: "95e4f570-c807-4100-9ace-4550377ad391",
-    //   reviews: [],
-    // }
+    const favorite = truck.favorite;
+
+    setTrucks((prevTrucks) => {
+      return prevTrucks.map((t) => {
+        // Prüfen, ob die ID übereinstimmt
+        if (truck.id === t.id) {
+          // Ein NEUES Truck-Objekt mit dem aktualisierten 'favorite'-Status zurückgeben
+          return { ...t, favorite: !t.favorite };
+        }
+        return t; // KORRIGIERT: Den aktuellen Truck 't' zurückgeben
+      });
+    });
+
+    if (favorite) {
+      /* truck favorited, so unfavorite it */
+      const { error } = await supabase
+        .from("favorites")
+        .delete()
+        .eq("truck_id", truck.id)
+        .eq("user_id", profile.id);
+
+      if (error) {
+        console.error("error when removing favorite truck: ", error);
+      }
+      return;
+    }
 
     const { data, error } = await supabase
       .from("favorites")
       .insert([{ truck_id: truck.id, user_id: profile.id }])
       .select();
-
-    console.log("data in favor truck: ", data);
 
     if (error) {
       console.error("error when favoriting truck: ", error);
@@ -203,13 +208,12 @@ export default function HomeScreen() {
     } else {
       starWidth = (avgStars / 5) * fullWidth;
     }
-    console.log("starwidth: ", starWidth);
+    console.log("item.favorite", item.favorite);
 
     return (
       <View
         style={{ width: CARD_WIDTH, marginRight: CARD_GAP }}
         className="relative bg-main rounded-lg shadow-xl overflow-hidden"
-        key={item.id}
       >
         <Image
           source={{ uri: imageUrl }}
@@ -295,7 +299,9 @@ export default function HomeScreen() {
             const index = Math.round(e.nativeEvent.contentOffset.x / ITEM_SIZE);
             if (index !== activeIndex) {
               setActiveIndex(index);
-              moveMapToTruck(trucks[index]);
+              if (trucks[index]) {
+                moveMapToTruck(trucks[index]);
+              }
               console.log("active index in flatlist onscroll: ", activeIndex);
             }
           }}
