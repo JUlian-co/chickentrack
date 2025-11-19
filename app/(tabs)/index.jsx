@@ -112,20 +112,6 @@ export default function HomeScreen() {
     );
   };
 
-  const getAvgStars = async (reviews) => {
-    console.log("reviews in avg stars: ", reviews);
-
-    let totalStars = 0;
-    await reviews.map((review) => {
-      console.log("review: ", review);
-      totalStars += Number(review.stars);
-      console.log("stars in map: ", totalStars);
-    });
-
-    console.log("avg stars: ", totalStars / reviews.length);
-    return totalStars / Number(reviews.length) || 0;
-  };
-
   return (
     <View className="flex-1">
       <MapView
