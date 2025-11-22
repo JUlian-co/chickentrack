@@ -17,9 +17,7 @@ import { Heart } from "lucide-react-native";
 import { useChickenTrucks } from "../../hooks/useChickenTrucks";
 
 export default function TruckSettingsScreen() {
-  const { profile } = useAuthContext();
-  const { trucks, setTrucks, favoriteTruck, favoriteTrucks } =
-    useChickenTrucks();
+  const { favoriteTruck, favoriteTrucks } = useChickenTrucks();
 
   const TruckCard = ({ item }) => {
     const imageUrl =
@@ -34,7 +32,6 @@ export default function TruckSettingsScreen() {
     } else {
       starWidth = (avgStars / 5) * fullWidth;
     }
-    console.log("item.favorite", item.favorite);
 
     return (
       <View

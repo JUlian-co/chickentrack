@@ -126,17 +126,22 @@ export function useChickenTrucks() {
 
     setTrucks((prevTrucks) => {
       return prevTrucks.map((t) => {
-        // Prüfen, ob die ID übereinstimmt
         if (truck.id === t.id) {
-          // Ein NEUES Truck-Objekt mit dem aktualisierten 'favorite'-Status zurückgeben
           return { ...t, favorite: !t.favorite };
         }
-        return t; // KORRIGIERT: Den aktuellen Truck 't' zurückgeben
+        return t;
       });
     });
 
     if (favorite) {
       /* truck favorited, so unfavorite it */
+
+      setFavoriteTrucks(
+        favoriteTrucks.filter((t) => {
+          if (t.id != truck.id) return truck;
+        })
+      );
+
       const { error } = await supabase
         .from("favorites")
         .delete()
@@ -146,6 +151,7 @@ export function useChickenTrucks() {
       if (error) {
         console.error("error when removing favorite truck: ", error);
       }
+
       return;
     }
 
