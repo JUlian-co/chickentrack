@@ -5,6 +5,7 @@ import { useAuthContext } from "@/hooks/use-auth-context";
 export function useChickenTrucks() {
   const { profile } = useAuthContext();
   const [trucks, setTrucks] = useState([]);
+  const [favoriteTrucks, setFavoriteTrucks] = useState([]);
 
   const fetchTrucksAndRelated = async () => {
     if (!profile || !profile.id) {
@@ -97,10 +98,12 @@ export function useChickenTrucks() {
       // Das neue, kombinierte Array zurückgeben
       return [...newUniqueTrucks];
     });
-    // setTrucks(trucksWithRelated);
-    // Anstelle von: setTrucks((prevTrucks) => [...prevTrucks, ...trucksWithRelated]);
 
-    // console.log("Vollständige Truck-Daten mit Bildern:", trucksWithRelated);
+    setFavoriteTrucks(
+      trucksWithRelated.filter((truck) => {
+        if (truck.favorite) return truck;
+      })
+    );
   };
 
   const getAvgStars = async (reviews) => {
@@ -165,6 +168,6 @@ export function useChickenTrucks() {
       "trucks in last if #++#+#+#+++#+#+#+#+#++#+#+#+#+#+#+#+#+#+##+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#++#+##+#+#+#++#+#+##+#+#++##++#+#+#",
       trucks
     );
-    return { trucks, setTrucks, favoriteTruck };
+    return { trucks, setTrucks, favoriteTruck, favoriteTrucks };
   }
 }

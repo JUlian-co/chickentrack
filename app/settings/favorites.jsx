@@ -18,19 +18,10 @@ import { useChickenTrucks } from "../../hooks/useChickenTrucks";
 
 export default function TruckSettingsScreen() {
   const { profile } = useAuthContext();
-  const { trucks, setTrucks, favoriteTruck } = useChickenTrucks();
-  console.log("trucks in stupdid shit settings page: ", trucks);
+  const { trucks, setTrucks, favoriteTruck, favoriteTrucks } =
+    useChickenTrucks();
 
-  const TruckCard = ({ item, favoriteTruck }) => {
-    setTrucks(
-      trucks.filter((truck) => {
-        if (truck.favorite) {
-          return truck;
-        }
-
-        return null;
-      })
-    );
+  const TruckCard = ({ item }) => {
     const imageUrl =
       item.images && item.images.length > 0 ? item.images[0].source : null;
 
@@ -47,7 +38,7 @@ export default function TruckSettingsScreen() {
 
     return (
       <View
-        style={{ marginRight: 8, height: 200 }} // feste Höhe nötig, sonst sind Bilder 0px hoch
+        style={{ marginRight: 8, height: 200 }}
         className="relative bg-main rounded-lg shadow-xl overflow-hidden w-full mb-4"
       >
         <Image
@@ -64,9 +55,7 @@ export default function TruckSettingsScreen() {
             <Text style={{ width: fullWidth }}>⭐️⭐️⭐️⭐️⭐️</Text>
           </View>
 
-          <TouchableOpacity
-            onPress={() => favoriteTruck && favoriteTruck(item)}
-          >
+          <TouchableOpacity onPress={() => favoriteTruck(item)}>
             {item.favorite ? (
               <Heart color={"#ff35c9"} size={24} fill={"#ff35c9"} />
             ) : (
@@ -88,10 +77,8 @@ export default function TruckSettingsScreen() {
       <Back parent={"settings"} name={"Favoriten"} />
       {/* <ScrollView className="w-full" contentContainerStyle={{ flexGrow: 1 }}> */}
       <FlatList
-        data={trucks}
-        renderItem={({ item }) => (
-          <TruckCard item={item} favoriteTruck={favoriteTruck} />
-        )}
+        data={favoriteTrucks}
+        renderItem={({ item }) => <TruckCard item={item} />}
         keyExtractor={(item, idx) =>
           item?.id ? item.id.toString() : `id-${idx}`
         }
